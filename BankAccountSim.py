@@ -27,6 +27,7 @@ def name_check():
         for i in list(client_first_name + client_last_name):
             if i.lower() not in string.ascii_lowercase:
                 invalid_name = True
+                break
         if invalid_name == False:
             name_confirm = input(f'Is {client_first_name} {client_last_name} correct? Y/N: ')
             if name_confirm.lower() == 'y':
