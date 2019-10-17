@@ -38,7 +38,7 @@ class BankAccount:
 
     def __init__(self,account_holder_name,balance=0.00):
 
-        self.account_holder_name = ' '.join(list(account_holder_name))
+        self.account_holder_name = ' '.join(account_holder_name)
         self.balance = balance
         self.first_name, self.last_name = account_holder_name[0], account_holder_name[1]
 
