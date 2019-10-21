@@ -2,6 +2,7 @@ import random
 import time
 
 
+# Uses *args in case of multiplayer functionality addition
 # Cycles through the participants...
 def deal_cards(*args):
     for game_participant in args:
