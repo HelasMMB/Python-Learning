@@ -1,6 +1,6 @@
 def main_menu():
     while True:
-        print('Welcome to Company Manager Pro!')
+        print('Welcome to Company Manager: EXTREME Edition!')
         print('What would you like to do?')
         choice = input('HIRE, FIRE, RAISE, DIRECTORY, or EXIT: ').strip().lower()
         if choice == 'hire':
@@ -17,7 +17,10 @@ def main_menu():
         else:
             print('Invalid input.')
 
+
 def input_request(requested_input):
+    # Converts inputs into title case and confirms them before returning
+    
     while True:
         answer = input(f"Please enter a {requested_input}: ").title()
         confirmation = input(f"Is {answer} correct? Y/N: ")
@@ -29,6 +32,8 @@ def input_request(requested_input):
             print('Invalid input.')
 
 def directory():
+    # Gives options to view employees by name or by role
+    
     print('\nWelcome to the directory!\n')
     user_exit = False
     while user_exit == False:
@@ -65,7 +70,6 @@ def directory():
                 for employee in Employee.HourlyEmployee.hourly_employees:
                     print(employee)
                 print('\nRole wage: $30,000')
-        # Come back to this after setting up full dict for all employees
         elif role_choice == '5':
             employee_name = input_request('first and last name of the employee')
             if employee_name in Employee.employee_directory:
@@ -80,8 +84,12 @@ def directory():
 
 class Employee():
 
+    # Running dict of every current employee : their role
+    # Hiring a new employee adds them to this as well as
+    # the role-specific employee list
     employee_directory = {}
 
+    # Different employee role classes which determine wage rate
     class Executive:
 
         executives = []
@@ -141,17 +149,22 @@ class Employee():
             return 'Hourly employee'
 
     class Company:
+        # This class contains most of the general housekeeping functions for
+        # hiring, firing, promoting, and searching employees
 
         def __init__(self):
             print('Company created.')
 
         def hire():
+            # Collects name/role info for new employee and instantiates them
 
             name = input_request('first and last name for the employee')
             role = __class__.confirm_role(name)
             __class__.add_to_employees(name, role)
 
         def fire():
+            # Removes an employee from corresponding directories (dict/list)
+            
             roles = [Employee.Executive.executives,
                      Employee.Manager.managers,
                      Employee.SalariedEmployee.salaried_employees,
@@ -165,6 +178,9 @@ class Employee():
 
 
         def promote():
+            # Removes the employee from their role list and instantiates them into
+            # another role while updating their role value in the main dict
+            
             name = input_request('first and last name for the employee')
             if name in Employee.employee_directory:
                 print('What role will this employee be promoted to?')
@@ -188,6 +204,8 @@ class Employee():
 
 
         def confirm_role(employee):
+            # Allows the user to confirm an employee role before instantiating
+            
             while True:
                 roles = {'1':'Executive', '2':'Manager', '3':'SalariedEmployee', '4':'HourlyEmployee'}
                 print('1: Executive')
@@ -201,6 +219,8 @@ class Employee():
                         return roles.get(role_choice)
 
         def add_to_employees(name, role):
+            # Determines the class with which an employee object will be created
+            
             if role == 'Executive':
                 Employee.Executive(name)
             elif role == 'Manager':
