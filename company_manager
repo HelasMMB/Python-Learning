@@ -1,0 +1,215 @@
+def main_menu():
+    while True:
+        print('Welcome to Company Manager Pro!')
+        print('What would you like to do?')
+        choice = input('HIRE, FIRE, RAISE, DIRECTORY, or EXIT: ').strip().lower()
+        if choice == 'hire':
+            Employee.Company.hire()
+        elif choice == 'fire':
+            Employee.Company.fire()
+        elif choice == 'raise':
+            Employee.Company.promote()
+        elif choice == 'directory':
+            directory()
+        elif choice == 'exit':
+            print('Thank you!')
+            raise SystemExit()
+        else:
+            print('Invalid input.')
+
+def input_request(requested_input):
+    while True:
+        answer = input(f"Please enter a {requested_input}: ").title()
+        confirmation = input(f"Is {answer} correct? Y/N: ")
+        if confirmation.lower() == 'y':
+            return answer
+        elif confirmation.lower() == 'n':
+            continue
+        else:
+            print('Invalid input.')
+
+def directory():
+    print('\nWelcome to the directory!\n')
+    user_exit = False
+    while user_exit == False:
+        roles = {'1': 'Executive', '2': 'Manager', '3': 'SalariedEmployee', '4': 'HourlyEmployee'}
+        print('1: Executive')
+        print('2: Manager')
+        print('3: Salaried Employee')
+        print('4: Hourly Employee')
+        print('5: Search by Name')
+        role_choice = input('Please choose an option: ')
+        if role_choice in roles:
+            print(f"\nAll current employees listed in the '{roles.get(role_choice)}' role:\n")
+            if roles.get(role_choice) == 'Executive':
+                if len(Employee.Executive.executives) == 0:
+                    print("No current employees in this role. That can't be good...")
+                for employee in Employee.Executive.executives:
+                    print(employee)
+                print('\nRole wage: $120,000')
+            elif roles.get(role_choice) == 'Manager':
+                if len(Employee.Manager.managers) == 0:
+                    print("No current employees in this role. That can't be good...")
+                for employee in Employee.Manager.managers:
+                    print(employee)
+                print('\nRole wage: $90,000')
+            elif roles.get(role_choice) == 'SalariedEmployee':
+                if len(Employee.SalariedEmployee.salaried_employees) == 0:
+                    print("No current employees in this role. That can't be good...")
+                for employee in Employee.SalariedEmployee.salaried_employees:
+                    print(employee)
+                print('\nRole wage: $60,000')
+            else:
+                if len(Employee.HourlyEmployee.hourly_employees) == 0:
+                    print("No current employees in this role. That can't be good...")
+                for employee in Employee.HourlyEmployee.hourly_employees:
+                    print(employee)
+                print('\nRole wage: $30,000')
+        # Come back to this after setting up full dict for all employees
+        elif role_choice == '5':
+            employee_name = input_request('first and last name of the employee')
+            if employee_name in Employee.employee_directory:
+                print(Employee.employee_directory.get(employee_name))
+            else:
+                print('Employee not found.')
+        else:
+            print('Invalid input.')
+        leave = input('\nWould you like to VIEW another directory, or return to the MENU?: ').strip().lower()
+        if leave == 'menu':
+            user_exit = True
+
+class Employee():
+
+    employee_directory = {}
+
+    class Executive:
+
+        executives = []
+
+        def __init__(self, name, pay_rate=1):
+
+            self.name = name
+            self.wage = pay_rate * 120000
+            self.__class__.executives.append(name)
+            Employee.employee_directory[name] = 'Executive'
+
+        def __str__(self):
+            return 'Executive'
+
+    class Manager:
+
+        managers = []
+
+        def __init__(self, name, pay_rate=1):
+
+            self.name = name
+            self.wage = pay_rate * 90000
+            print(f"Employee name: {name}")
+            self.__class__.managers.append(name)
+            Employee.employee_directory[name] = 'Manager'
+            print('Manager added.')
+
+        def __str__(self):
+            return 'Manager'
+
+    class SalariedEmployee:
+
+        salaried_employees = []
+
+        def __init__(self, name, pay_rate=1):
+
+            self.name = name
+            self.wage = pay_rate * 60000
+            self.__class__.salaried_employees.append(name)
+            Employee.employee_directory[name] = 'SalariedEmployee'
+
+        def __str__(self):
+            return 'Salaried employee'
+
+    class HourlyEmployee:
+
+        hourly_employees = []
+
+        def __init__(self, name, pay_rate=1):
+
+            self.name = name
+            self.wage = pay_rate * 30000
+            self.__class__.hourly_employees.append(name)
+            Employee.employee_directory[name] = 'HourlyEmployee'
+
+        def __str__(self):
+            return 'Hourly employee'
+
+    class Company:
+
+        def __init__(self):
+            print('Company created.')
+
+        def hire():
+
+            name = input_request('first and last name for the employee')
+            role = __class__.confirm_role(name)
+            __class__.add_to_employees(name, role)
+
+        def fire():
+            roles = [Employee.Executive.executives,
+                     Employee.Manager.managers,
+                     Employee.SalariedEmployee.salaried_employees,
+                     Employee.HourlyEmployee.hourly_employees]
+            name = input_request('first and last name of the employee')
+            for list in roles:
+                if name in list:
+                    list.pop(list.index(name))
+                    del Employee.employee_directory[name]
+                    print('Employee fired.')
+
+
+        def promote():
+            name = input_request('first and last name for the employee')
+            if name in Employee.employee_directory:
+                print('What role will this employee be promoted to?')
+                roles = {'1': 'Executive', '2': 'Manager', '3': 'SalariedEmployee'}
+                print('1: Executive')
+                print('2: Manager')
+                print('3: Salaried Employee')
+                role_choice = input('Please choose an option: ')
+                if role_choice in roles:
+                    confirm = input(f"Is the role '{roles.get(role_choice)}' correct for '{name}'? Y/N: ")
+                    if confirm.lower() == 'y':
+                        Employee.employee_directory[name] = roles.get(role_choice)
+                        role_lists = [Employee.Executive.executives,
+                                 Employee.Manager.managers,
+                                 Employee.SalariedEmployee.salaried_employees,
+                                 Employee.HourlyEmployee.hourly_employees]
+                        for list in role_lists:
+                            if name in list:
+                                list.pop(list.index(name))
+                        __class__.add_to_employees(name, roles.get(role_choice))
+
+
+        def confirm_role(employee):
+            while True:
+                roles = {'1':'Executive', '2':'Manager', '3':'SalariedEmployee', '4':'HourlyEmployee'}
+                print('1: Executive')
+                print('2: Manager')
+                print('3: Salaried Employee')
+                print('4: Hourly Employee')
+                role_choice = input('Please choose an option: ')
+                if role_choice in roles:
+                    confirm = input(f"Is the role '{roles.get(role_choice)}' correct for '{employee}'? Y/N: ")
+                    if confirm.lower() == 'y':
+                        return roles.get(role_choice)
+
+        def add_to_employees(name, role):
+            if role == 'Executive':
+                Employee.Executive(name)
+            elif role == 'Manager':
+                Employee.Manager(name)
+            elif role == 'SalariedEmployee':
+                Employee.SalariedEmployee(name)
+            else:
+                Employee.HourlyEmployee(name)
+
+
+if __name__ == "__main__":
+    main_menu()
